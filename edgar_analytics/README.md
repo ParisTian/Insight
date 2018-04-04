@@ -11,16 +11,17 @@ Please refer to the following link for the description of the design: [https://g
 
 # Dependencies
 
-This implementation used opencsv-3.3.jar to parse csv file. This file is put under 'src' directory along with the sessionization.java. And the compiling and running command has included that file. Basically speaking, you don't need to do anything.
+This implementation used `opencsv-3.3.jar` to parse csv file. This file is put under `src` directory along with the `sessionization.java`. And the compiling and running command has included that file. Basically speaking, you don't need to do anything.
 
 # Solution
 
 * Parse cvs file line by line:
 	* Put new record into a queue. This queue keeps all the records during the time slot: 'X - inact_period' to 'X'
-	* Use a map to keep track the active IP, and its start time, latest time. 
+	* Use a map (key=IP, value=IpNode) to keep track the active IP, and its start time, latest time. 
 		* if cur IP is in map, update latest time, and web counter++
 		* else put cur IP in map, set start time, latest time, rank.
-	* When X+1 time comes, check all the records occured at or before moment 'X - inact_period', get the latest time from the map.
+	* When X+1 time comes, check all the records occured at or before moment 'X - inact_period'
+		* cur IP's information is in IpNode, use IP as key, get it's information. Use the latest_time to calculate inactive time.
 		* if inactive for over 'inact_period', put this IP into file, remove from map.
 	* When EOF
 		* Put all the leftover into a heap to reorder in asending sequence, 
@@ -29,21 +30,21 @@ This implementation used opencsv-3.3.jar to parse csv file. This file is put und
 		* Then move the record one by one from heap to file, till it is empty.
 		
 * Error Handling:
-	* Read input file inactivity_period.txt, check the validation.
-		* if < 1 or > 86400, report WARNING. For case < 1, will use 1 as inactivity period.
-	* Read input file log.csv, get the indices of the required fields, check the validation of the file.
+	* Read input file `inactivity_period.txt`, check the validation.
+		* if `inact_period < 1` or `inact_period > 86400`, report WARNING. For case `inact_period < 1`, will use 1 instead.
+	* Read input file `log.csv`, get the indices of the required fields, check the validation of the file.
 		* get the indices for required fields: "ip", "date", "time" ...
 		* if required fields are not there, report ERROR and EXIT
 		* if required fields appears more than once, report WARNING, use the last one.
 		
 * Methods: 
 	* `edgarAnalytics`  : Analyze given EDGAR file, output a summary into output file.
-	* `getInactPeriod`  : Get inactive period from given file. Check the validation.
-	* `openLogFile`     : open Log file and check the validation.
-	* `openOutFile`     : Open outout file
+	* `getInactPeriod`  : Get inactive period from file `inactivity_period.txt`. Check the validation.
+	* `openLogFile`     : open `log.csv` file and check the validation.
+	* `openOutFile`     : Open output file `sessionization.txt`
 	* `analyzeLogFile`  : Analyze log file line by line.
 	* `reorderLeftOver` : Reorder the leftover according to requirment
-	* `putToFile`       : Compose the message and put into file
+	* `putToFile`       : Compose the message and put into file `sessionization.txt`
 	* `my_print_error`  : Print error message
 	* `my_print_warning`: Print warning message
 
@@ -65,7 +66,7 @@ However, I added following lines in run.sh. You don't need to do anything about 
 
 For processing massive data, we could split the source data into several data file, and process them seperatly.
 
-If the memeoy is not big enough to put the queue, then we could use more pointers to point to the different position of the source file for processing. For example, the queue is for saving the records from time X with time slot T, then use fp1 points to X, fp2 to X+T, then load records from X to X+T/2, use fp3 to keep record of position of X+T/2.
+If the memeoy is not big enough to put the queue, then we could use more pointers to point to the different position of the source file for processing. For example, the queue is for saving the records from time X with time slot T, then use fp1 points to X, fp2 to X+T, then load records from X to X+T/2, use fp3 to keep record of position X+T/2.
 
-For sorting, if memory is not big enough, then we need to apply external merge sort.
+For sorting function, if memory is not big enough, then we need to apply external merge sort.
 
