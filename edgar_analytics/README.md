@@ -1,9 +1,9 @@
 # Table of Contents
-1. [Description of the task](README.md#Description of the task)
-2. [Dependencies](README.md#Dependencies)
-3. [Solution](README.md#Solution)
-4. [Run instructions](README.md#Run instructions)
-5. [Redesign for processing massive data](README.md#Redesign for processing massive data)
+1. [Description of the task](README.md#description-of-the-task)
+2. [Dependencies](README.md#dependencies)
+3. [Solution](README.md#solution)
+4. [Run instructions](README.md#run-instructions)
+5. [Redesign for processing massive data](README.md#redesign-for-processing-massive-data)
 
 # Description of the task
 
