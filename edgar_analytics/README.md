@@ -64,9 +64,11 @@ However, I added following lines in run.sh. You don't need to do anything about 
 
 # Redesign for processing massive data
 
-For processing massive data, we could split the source data into several data file, and process them seperatly.
+For processing massive data, we could use map-reduce strategy plus external merge sort. 
 
-If the memeoy is not big enough to put the queue, then we could use more pointers to point to the different position of the source file for processing. For example, the queue is for saving the records from time X with time slot T, then use fp1 points to X, fp2 to X+T, then load records from X to X+T/2, use fp3 to keep record of position X+T/2.
+First, chop file into many chunks. Each chunk is deployed as one map task. These map tasks will generate <key, value> pairs, with IP address as key, the related informations as value. 
 
-For sorting function, if memory is not big enough, then we need to apply external merge sort.
+Second, each reduce task will work on only a collection of IP addresses, calculate the time and the count of web pages. Write the outcome an individual file. 
+
+Third, now we have many sub-files, each of the sub-file has the outcome of a collection of IP addresses. Use external merge sort to merge these individual files into one output file.
 
