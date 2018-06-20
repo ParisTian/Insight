@@ -20,9 +20,13 @@ This implementation used `opencsv-3.3.jar` to parse csv file. This file is put u
 	* Use a map (key=IP, value=IpNode) to keep track the active IP, and its start time, latest time. 
 		* if cur IP is in map, update latest time, and web counter++
 		* else put cur IP in map, set start time, latest time, rank.
-	* When X+1 time comes, check all the records occured at or before moment 'X - inact_period'
-		* cur IP's information is in IpNode, use IP as key, get it's information. Use the latest_time to calculate inactive time.
-		* if inactive for over 'inact_period', put this IP into file, remove from map.
+	* When X+1 time comes, 
+		* check all the records occured at or before moment 'X - inact_period'
+			* cur IP's information is in IpNode, use IP as key, get it's information. Use the latest_time to calculate inactive time.
+			* if inactive for over 'inact_period', put this IP into file, remove from map.
+		* put new incoming record occured at X+1 into map. web page ++ 
+			* if map has this IP, update latest accessing time
+			* if map doesn't have this IP, setup a new record.
 	* When EOF
 		* Put all the leftover into a heap to reorder in asending sequence, 
 			* first check start time
